@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; margin: 0; }
+        .main-container { display: flex; flex-direction: column; min-height: 100vh; }
+        .header { background-color: #2c3e50; color: white; padding: 10px 40px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .header h1 { margin: 0; font-size: 1.5rem; }
+        .header nav a { color: white; text-decoration: none; margin-left: 20px; font-weight: 500; }
+        .content-area { flex-grow: 1; padding: 40px; }
+        .welcome-card { background: white; border-radius: 8px; padding: 30px; margin-bottom: 30px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
+        .welcome-card h2 { margin: 0 0 10px 0; color: #2c3e50; }
+        .welcome-card p { margin: 0; color: #7f8c8d; }
+        .actions { display: flex; justify-content: center; gap: 20px; }
+        .action-btn { background-color: #3498db; color: white; padding: 15px 25px; border-radius: 5px; text-decoration: none; font-size: 1rem; font-weight: bold; transition: background-color 0.3s; }
+        .action-btn:hover { background-color: #2980b9; }
+        footer { text-align: center; padding: 20px; font-size: 0.9rem; color: #888; background-color: #e9ecef; }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <header class="header">
+            <h1>Admin Panel</h1>
+            <nav>
+                <!-- These links now point to the correct, non-conflicting URLs -->
+                <a href="{% url 'admin_dashboard' %}">Home</a>
+                <a href="{% url 'log_dashboard' %}">View Logs</a>
+                <a href="{% url 'view_user_activities' %}">User Activities</a>
+                <a href="{% url 'admin_logout' %}">Logout</a>
+            </nav>
+        </header>
+
+        <main class="content-area">
+            <div class="welcome-card">
+                <h2>Welcome, Admin!</h2>
+                <p>Email: {{ request.user.email }}</p>
+                <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
+                <div class="actions">
+                    <!-- These buttons now point to the correct, non-conflicting URLs -->
+                    <a href="{% url 'log_dashboard' %}" class="action-btn">View Logs</a>
+                    <a href="{% url 'view_user_activities' %}" class="action-btn">View User Activities</a>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2025 Biometric-Based Access System</p>
+        </footer>
+    </div>
+</body>
+</html>

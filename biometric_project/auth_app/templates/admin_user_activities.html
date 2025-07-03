@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Activity Logs</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; margin: 0; }
+        .main-container { display: flex; flex-direction: column; min-height: 100vh; }
+        .header { background-color: #2c3e50; color: white; padding: 10px 40px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .header h1 { margin: 0; font-size: 1.5rem; }
+        .header nav a { color: white; text-decoration: none; margin-left: 20px; font-weight: 500; }
+        .content-area { flex-grow: 1; padding: 40px; }
+        .card { background: white; border-radius: 8px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
+        h2 { color: #2c3e50; margin-top: 0; }
+        .filter-bar { margin-bottom: 20px; display: flex; gap: 15px; align-items: center; }
+        .filter-bar select, .filter-bar input { padding: 8px; border-radius: 5px; border: 1px solid #ccc; }
+        .filter-bar button { background-color: #3498db; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px 15px; border-bottom: 1px solid #ddd; text-align: left; }
+        th { background-color: #e9ecef; }
+        tr:hover { background-color: #f8f9fa; }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <header class="header">
+            <h1>Admin Panel</h1>
+            <nav>
+                <a href="{% url 'admin_dashboard' %}">Home</a>
+                <a href="{% url 'log_dashboard' %}">View Logs</a>
+                <a href="{% url 'view_user_activities' %}" style="text-decoration: underline;">User Activities</a>
+                <a href="{% url 'admin_logout' %}">Logout</a>
+            </nav>
+        </header>
+
+        <main class="content-area">
+            <div class="card">
+                <h2>User Activity Logs</h2>
+                <form method="get" class="filter-bar">
+                    <label>Username:</label>
+                    <select name="username">
+                        <option value="">All</option>
+                        {% for username in usernames %}
+                            <option value="{{ username }}" {% if username == selected_user %}selected{% endif %}>{{ username }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit">Filter</button>
+                </form>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Filename</th>
+                            <th>Upload Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for file in files %}
+                        <tr>
+                            <td>{{ file.user.username }}</td>
+                            <td>{{ file.filename }}</td>
+                            <td>{{ file.upload_time }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3">No activities found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

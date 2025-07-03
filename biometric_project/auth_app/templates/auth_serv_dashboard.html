@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Auth Server Dashboard</title>
+     <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; margin: 0; }
+        .header { background-color: #16a085; color: white; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; }
+        h1 { margin: 0; }
+        .content { padding: 40px; }
+        .card { background: white; border-radius: 8px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px 15px; border-bottom: 1px solid #ddd; text-align: left; }
+        th { background-color: #e9ecef; }
+        .status-not-auth { color: #c0392b; font-weight: bold; }
+        .status-auth { color: #27ae60; font-weight: bold; }
+        button { border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; color: white; }
+        .auth-btn { background-color: #2980b9; }
+        .unauth-btn { background-color: #e74c3c; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Authentication Server Dashboard</h1>
+        <a href="{% url 'auth_serv_logout' %}" style="color:white;">Logout</a>
+    </div>
+    <div class="content">
+         {% if messages %}
+            {% for message in messages %}
+                <div style="padding: 15px; background-color: #d4edda; color: #155724; border-radius: 5px; margin-bottom: 20px;">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+        <div class="card">
+            <h2>User Authentication Status</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>
+                            {% if user.is_authenticated_by_server %}
+                                <span class="status-auth">Authorized</span>
+                            {% else %}
+                                <span class="status-not-auth">Not Authorized</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                             {% if not user.is_authenticated_by_server %}
+                                <form method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="user_id" value="{{ user.id }}">
+                                    <button type="submit" name="authorize_user" class="auth-btn">Authorize User</button>
+                                </form>
+                            {% else %}
+                                <!-- ================================================= -->
+                                <!-- IMPORTANT CHANGE HERE: The new Unauthorize button -->
+                                <!-- ================================================= -->
+                                <form method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="user_id" value="{{ user.id }}">
+                                    <button type="submit" name="unauthorize_user" class="unauth-btn">Revoke Access</button>
+                                </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4">No users found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

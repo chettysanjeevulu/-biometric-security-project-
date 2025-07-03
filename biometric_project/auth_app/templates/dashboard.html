@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+    <style>
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; display: flex; }
+        .sidebar { width: 250px; background: #2c3e50; color: white; padding-top: 20px; min-height: 100vh; }
+        .sidebar h2 { text-align: center; font-size: 1.5rem; margin-bottom: 30px; }
+        .sidebar ul { list-style: none; padding: 0; }
+        .sidebar ul li a { display: block; padding: 15px 20px; color: white; text-decoration: none; transition: background 0.3s; border-left: 3px solid transparent; }
+        .sidebar ul li a:hover, .sidebar ul li a.active { background: #34495e; border-left: 3px solid #3498db; }
+        .main-content { flex-grow: 1; }
+        .header { background: white; padding: 15px 30px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
+        .header .welcome { margin: 0; font-size: 1.2rem; }
+        .header .logout-btn { color: white; text-decoration: none; background: #e74c3c; padding: 10px 15px; border-radius: 5px; transition: background 0.3s; }
+        .header .logout-btn:hover { background: #c0392b; }
+        .content { padding: 30px; }
+        .card { background: white; border-radius: 8px; padding: 25px; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        h3 { color: #34495e; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+        button, input[type="submit"] { background-color: #3498db; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 1rem; }
+        button:hover, input[type="submit"]:hover { background-color: #2980b9; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px 15px; border-bottom: 1px solid #ddd; text-align: left; }
+        th { background-color: #f8f9fa; }
+        tr:hover { background-color: #f1f1f1; }
+        .action-btn { text-decoration: none; padding: 6px 12px; border-radius: 5px; color: white; margin-right: 5px; font-size: 0.9rem; }
+        .download-btn { background: #27ae60; }
+        .delete-btn { background: #e74c3c; border: none; font-family: 'Segoe UI', sans-serif; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Dashboard</h2>
+        <ul>
+            <li><a href="#files-section" class="active">Your Files</a></li>
+            <li><a href="{% url 'logout_user' %}">Logout</a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <div class="header">
+            <p class="welcome">Welcome, <strong>{{ request.user.username }}</strong>!</p>
+            <p>Email: {{ request.user.email }}</p>
+            <a href="{% url 'logout_user' %}" class="logout-btn">Logout</a>
+        </div>
+        <div class="content">
+            {% if messages %}{% for message in messages %}<div style="padding: 15px; background-color: #d4edda; color: #155724; border-radius: 5px; margin-bottom: 20px;">{{ message }}</div>{% endfor %}{% endif %}
+            
+            <div class="card" id="files-section">
+                <h3>Upload a File</h3>
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="file" name="file" required>
+                    <button type="submit" name="upload_file">Upload</button>
+                </form>
+            </div>
+            
+            <div class="card">
+                <h3>Your Uploaded Files</h3>
+                {% if files %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Filename</th>
+                            <th>Upload Time</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for file in files %}
+                        <tr>
+                            <td>{{ file.filename|cut:"uploads/" }}</td>
+                            <td>{{ file.upload_time }}</td>
+                            <td>
+                                <a href="{% url 'download_file' file.id %}" class="action-btn download-btn">Download</a>
+                                <form method="post" action="{% url 'dashboard' %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="file_id" value="{{ file.id }}">
+                                    <button type="submit" name="delete_file" class="action-btn delete-btn">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p>No files uploaded yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>
